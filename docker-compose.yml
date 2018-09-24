@@ -24,7 +24,7 @@ services:
 
   worker:
     tty: true
-    build: .
+    build: ./worker
     environment:
     - RABBITMQ_USER=${RABBITMQ_DEFAULT_USER}
     - RABBITMQ_PASS=${RABBITMQ_DEFAULT_PASS}

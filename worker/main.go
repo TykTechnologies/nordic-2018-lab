@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/TykTechnologies/nordic-2018-lab/db"
-	. "github.com/TykTechnologies/nordic-2018-lab/helpers"
+	"github.com/TykTechnologies/nordic-2018-lab/worker/db"
+	. "github.com/TykTechnologies/nordic-2018-lab/worker/helpers"
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 )

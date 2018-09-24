@@ -14,3 +14,18 @@ RMQ Management Console
 Mongo
 -----
 No auth has been set for MongoDB
+
+Project Structure
+-----------------
+
+### `/worker`
+
+This is the todo application processing msgs received via RMQ, and responding
+
+### `/workshop`
+
+This is the workspace where you can create your own gRPC plugin to handle incoming requests from Tyk
+
+### `/workshop-complete`
+
+Spoiler Alert - This is a complete working example of the workshop available in go, python and java.

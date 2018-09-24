@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	. "github.com/TykTechnologies/nordic-2018-lab/helpers"
+	. "github.com/TykTechnologies/nordic-2018-lab/worker/helpers"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
