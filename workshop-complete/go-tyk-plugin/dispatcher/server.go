@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/streadway/amqp"
-	"gopkg.in/mgo.v2/bson"
 	"log"
+	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/streadway/amqp"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/TykTechnologies/nordic-2018-lab/workshop-complete/go-tyk-plugin/hook"
 	"github.com/TykTechnologies/tyk-protobuf/bindings/go"
@@ -27,40 +29,71 @@ func (s Server) Dispatch(ctx context.Context, obj *coprocess.Object) (*coprocess
 		//objJson, _ := json.MarshalIndent(obj, "", "  ")
 		//log.Printf("%s", string(objJson))
 
+		// stripping the listen path
+		// /todos/12345abc -> /12345abc
 		path := strings.Replace(obj.Request.Url, "/todos", "", -1)
-		routingKey := "index"
+
+		// get the id from the path
+		// /12345abc -> 12345abc
+		idString := strings.Replace(path, "/", "", 1)
+
+		routingKey := ""
 		todo := hook.Todo{}
 
+		// Handle request routing and build the request
 		switch obj.Request.Method {
-		case "GET":
-			if path != "/" {
+		case http.MethodGet:
+			if path == "/" {
+				routingKey = "index"
+				todo.User = obj.Session.Alias
+			} else {
 				routingKey = "show"
 
-				idString := strings.Replace(path, "/", "", 1)
-
+				if !bson.IsObjectIdHex(idString) {
+					obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
+					obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
+					obj.Request.ReturnOverrides.Headers = map[string]string{
+						"Content-Type": "application/json",
+					}
+					return obj, nil
+				}
 				todo.ID = bson.ObjectIdHex(idString)
 			}
-			todo.User = obj.Session.Alias
-			log.Printf("METHOD: GET path := %s, TODO: %#v", path, todo)
-		case "POST":
+		case http.MethodPost:
 			routingKey = "store"
-			todo.User = obj.Session.Alias
 
-			var tmpTodo hook.Todo
-			_ = json.Unmarshal([]byte(obj.Request.Body), &tmpTodo)
-			todo.Todo = tmpTodo.Todo
-
-		case "DELETE":
+			_ = json.Unmarshal([]byte(obj.Request.Body), &todo)
+		case http.MethodDelete:
 			routingKey = "delete"
-			todo.User = obj.Session.Alias
-			idString := strings.Replace(path, "/", "", 1)
+			if !bson.IsObjectIdHex(idString) {
+				obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
+				obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
+				obj.Request.ReturnOverrides.Headers = map[string]string{
+					"Content-Type": "application/json",
+				}
+				return obj, nil
+			}
 			todo.ID = bson.ObjectIdHex(idString)
-		case "PATCH":
-			// NOT IMPLEMENTED YET
+		case http.MethodPatch:
+			routingKey = "update"
 
+			if !bson.IsObjectIdHex(idString) {
+				obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
+				obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
+				obj.Request.ReturnOverrides.Headers = map[string]string{
+					"Content-Type": "application/json",
+				}
+				return obj, nil
+			}
+
+			_ = json.Unmarshal([]byte(obj.Request.Body), &todo)
 		default:
 			return obj, errors.New("unsupported method")
 		}
+
+		// regardless of what the user posted was their user,
+		// we set user to that of the JWT sub claim
+		todo.User = obj.Session.Alias
 
 		channel, _ := s.RabbitConn.Channel()
 		defer channel.Close()
