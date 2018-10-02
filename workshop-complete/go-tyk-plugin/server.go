@@ -10,10 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/streadway/amqp"
-	"gopkg.in/mgo.v2/bson"
-
 	"github.com/TykTechnologies/tyk-protobuf/bindings/go"
+	"github.com/streadway/amqp"
 )
 
 type Server struct {
@@ -47,43 +45,17 @@ func (s Server) Dispatch(ctx context.Context, obj *coprocess.Object) (*coprocess
 				todo.User = obj.Session.Alias
 			} else {
 				routingKey = "show"
-
-				if !bson.IsObjectIdHex(idString) {
-					obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
-					obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
-					obj.Request.ReturnOverrides.Headers = map[string]string{
-						"Content-Type": "application/json",
-					}
-					return obj, nil
-				}
-				todo.ID = bson.ObjectIdHex(idString)
+				todo.ID = idString
 			}
 		case http.MethodPost:
 			routingKey = "store"
-
 			_ = json.Unmarshal([]byte(obj.Request.Body), &todo)
 		case http.MethodDelete:
 			routingKey = "delete"
-			if !bson.IsObjectIdHex(idString) {
-				obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
-				obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
-				obj.Request.ReturnOverrides.Headers = map[string]string{
-					"Content-Type": "application/json",
-				}
-				return obj, nil
-			}
-			todo.ID = bson.ObjectIdHex(idString)
+			todo.ID = idString
 		case http.MethodPatch:
 			routingKey = "update"
-
-			if !bson.IsObjectIdHex(idString) {
-				obj.Request.ReturnOverrides.ResponseCode = http.StatusBadRequest
-				obj.Request.ReturnOverrides.ResponseError = `{"error": "invalid id"}`
-				obj.Request.ReturnOverrides.Headers = map[string]string{
-					"Content-Type": "application/json",
-				}
-				return obj, nil
-			}
+			todo.ID = idString
 
 			_ = json.Unmarshal([]byte(obj.Request.Body), &todo)
 		default:

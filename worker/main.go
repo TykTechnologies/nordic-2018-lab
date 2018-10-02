@@ -75,7 +75,8 @@ func main() {
 				todo := db.Todo{}
 				err := json.Unmarshal(msg.Body, &todo)
 				if err != nil {
-					log.WithError(err).Errorf("junk supplied - dropping: %s", string(msg.Body))
+					send(channel, ErrorJson(err.Error()), msg.ReplyTo, msg.CorrelationId, action)
+					//log.WithError(err).Errorf("junk supplied - dropping: %s", string(msg.Body))
 					continue
 				}
 

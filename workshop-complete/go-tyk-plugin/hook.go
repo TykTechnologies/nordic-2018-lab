@@ -8,15 +8,14 @@ import (
 
 	"github.com/TykTechnologies/tyk-protobuf/bindings/go"
 	"github.com/streadway/amqp"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type Todo struct {
-	ID        bson.ObjectId `bson:"_id,omitempty" json:"id,omitempty"`
-	User      string        `json:"user"`
-	Todo      string        `json:"todo"`
-	Complete  bool          `json:"complete"`
-	CreatedAt time.Time     `json:"created_at"`
+	ID        string    `json:"id,omitempty"`
+	User      string    `json:"user"`
+	Todo      string    `json:"todo"`
+	Complete  bool      `json:"complete"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func TodoRPC(rabbitChannel *amqp.Channel, routingKey string, bodyBytes []byte, obj *coprocess.Object) {
