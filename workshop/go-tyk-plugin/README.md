@@ -1,18 +1,23 @@
 Nordic APIs - Tyk Workshop 2
 ============================
 
-## Introduction
+Configuring your API:
 
-`main.go`
+1. Configure an API with the listen path `todos` via Tyk Dashboard to accept JWT auth
+    - for simplicity, choose shared secret - and give a simple password.
+    - set the subject to `sub`
+    - set the policy to `pol`
+2. Configure a Policy to grant access to your API.
+3. Send an API call to your api without a token
+4. Generate a JWT via https://jwt.io
+    - You should add a couple of claims `exp`, `sub` and `pol`
+    - Remember to select `HS256` and enter your shared secret to sign the JWT.
+5. Test that your JWT works
 
-The entrypoint to the Tyk gRPC middleware plugin.
+---
 
-We first establish a connection to RabbitMQ, then start a gRPC server listening on `tcp://0.0.0.0:9000`
+## Building your plugin:
 
-This gRPC server registers a DispatcherServer which we pass in the connection to Rabbit.
-
-`server.go`
-
-This is where you will be building out all your functionality.
-
+In this part of the workshop, we will be building a gRPC plugin, which will interface with
+some todo's microservices sitting behind RabbitMQ.
 
