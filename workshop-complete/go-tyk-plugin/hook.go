@@ -1,4 +1,4 @@
-package hook
+package main
 
 import (
 	"encoding/json"
@@ -63,8 +63,10 @@ func TodoRPC(rabbitChannel *amqp.Channel, routingKey string, bodyBytes []byte, o
 		}
 
 		obj.Request.ReturnOverrides.ResponseError = string(d.Body)
-		obj.Request.ReturnOverrides.Headers = make(map[string]string)
-		obj.Request.ReturnOverrides.Headers["Content-Type"] = "application/json"
+		obj.Request.ReturnOverrides.Headers = map[string]string{
+			"Content-Type": "application/json",
+		}
+
 		return
 	}
 }

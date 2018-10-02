@@ -1,4 +1,4 @@
-package dispatcher
+package main
 
 import (
 	"context"
@@ -13,7 +13,6 @@ import (
 	"github.com/streadway/amqp"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/TykTechnologies/nordic-2018-lab/workshop-complete/go-tyk-plugin/hook"
 	"github.com/TykTechnologies/tyk-protobuf/bindings/go"
 )
 
@@ -38,7 +37,7 @@ func (s Server) Dispatch(ctx context.Context, obj *coprocess.Object) (*coprocess
 		idString := strings.Replace(path, "/", "", 1)
 
 		routingKey := ""
-		todo := hook.Todo{}
+		todo := Todo{}
 
 		// Handle request routing and build the request
 		switch obj.Request.Method {
@@ -100,7 +99,7 @@ func (s Server) Dispatch(ctx context.Context, obj *coprocess.Object) (*coprocess
 
 		bodyBytes, _ := json.Marshal(todo)
 
-		hook.TodoRPC(channel, routingKey, bodyBytes, obj)
+		TodoRPC(channel, routingKey, bodyBytes, obj)
 	default:
 		log.Printf("hook not implemented %s", obj.HookName)
 	}

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"github.com/streadway/amqp"
 	"log"
 	"net"
 
-	"github.com/TykTechnologies/nordic-2018-lab/workshop-complete/go-tyk-plugin/dispatcher"
 	"github.com/TykTechnologies/tyk-protobuf/bindings/go"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 )
 
@@ -26,7 +25,7 @@ func main() {
 	log.Printf("listening on tcp://%s", listenAddress)
 
 	s := grpc.NewServer()
-	coprocess.RegisterDispatcherServer(s, &dispatcher.Server{
+	coprocess.RegisterDispatcherServer(s, &Server{
 		RabbitConn: conn,
 	})
 
