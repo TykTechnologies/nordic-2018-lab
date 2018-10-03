@@ -24,7 +24,16 @@ some todo's microservices sitting behind RabbitMQ.
 We need to modify your API definition to tell the gateway to pass requests to the gRPC
 server after the gateway has validated the JWT token.
 
-Click `Raw API Definition`
+Update the gateway configuration to point to your gRPC server and restart the service
+
+```
+"coprocess_options": {
+  "enable_coprocess": true,
+  "coprocess_grpc_server": "tcp://127.0.0.1:9000"
+}
+```
+
+From the dashboard, go to your todos api, and click `Raw API Definition`
 
 Change `custom_middleware.driver` from the empty string `""` to `"grpc"`.
 
@@ -32,13 +41,13 @@ Add the following object to the `custom_middleware.post_key_auth` array.
 
 ```json
 {
- "name": "TodoRabbitHook"
+  "name": "TodoRabbitHook"
 }
 ```
 
 Now, for every request to that API, the gRPC server will be invoked.
 
-We now need to implement a couple of methods:
+We now need to implement a couple of methods they should work as follows:
 
 Save a TODO:
 ```
