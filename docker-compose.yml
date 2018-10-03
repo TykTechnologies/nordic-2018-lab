@@ -17,7 +17,7 @@ services:
   mongo:
     image: mongo:3.4-jessie
     ports:
-    - 127.0.0.1:27017:27017
+    - 27018:27017
     volumes:
     - ./docker-volumes/mongo:/data/db
     restart: unless-stopped

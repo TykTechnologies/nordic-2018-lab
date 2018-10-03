@@ -6,6 +6,6 @@ ENV PATH $PATH:$worker_path
 WORKDIR $worker_path
 COPY . .
 
-RUN go get -u ./... go build -o foo .
+RUN go build -o foo .
 
 ENTRYPOINT foo
