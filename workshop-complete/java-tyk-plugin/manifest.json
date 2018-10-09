@@ -1,0 +1,14 @@
+{
+  "custom_middleware": {
+    "pre": [
+      {
+        "name": "MyPreMiddleware"
+      }
+    ],
+    "post": [
+    ],
+    "auth_check": {
+    },
+    "driver": "grpc"
+  }
+}
