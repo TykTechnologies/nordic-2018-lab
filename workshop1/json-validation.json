@@ -1,0 +1,27 @@
+{
+   "properties":{
+      "todo":{
+         "description":"You must enter todo's content",
+         "type":"string"
+      },
+      "user":{
+         "description":"Your username is required",
+         "type":"string"
+      },
+      "id":{
+          "description":"Todo's ID from MongoDb",
+         "type":"string"
+      },
+      "complete":{
+          "description": "Has the task been completed? true/false",
+          "type":"boolean"
+      }
+   },
+   "required":[
+      "id",
+      "todo",
+      "user"
+   ],
+   "title":"New Todo's JSON validation",
+   "type":"object"
+}
