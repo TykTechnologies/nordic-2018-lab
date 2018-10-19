@@ -1,5 +1,5 @@
 
-**Soap to xml**
+**1. Soap to xml**
 
 Demonstrate **Body transform** and **Modify headers**
 1. Call `http://httpbin.org/xml` to get an xml
@@ -32,8 +32,9 @@ Demonstrate **Body transform** and **Modify headers**
     }
 }
 ```
+=================================================
 
-**Input Validqation**
+**2. Input Validqation**
 
 Demonstrate **Json Schema** 
 1. Check and call `http://httpbin.org/post` and then same under the gateway (using postman or curl)
@@ -51,14 +52,9 @@ curl -X POST \
 3. Test with the save request. You'll see your payload in the "data" field in the response.
 4. Play with the request - remove the id or the todo, to get the validation tripped
 
+=================================================
 
-**Versioning**
-Tick of from the checkbox.
-Add versions' names, default version, new target urls
-
-We can for instance set another target url for v2 and then call the gw (http://www.tyk-gateway.com:8080/soap-to-json/) and get the ip and not the main page.
-
-**Virtual Endpoint**
+**3. Virtual Endpoint**
 
 1. Create a new keyless api, add a new endpoint "/" and choose **Virtual endpoint** from the drop down
 2. Paste this code 
@@ -120,3 +116,11 @@ curl -X GET \
   -H 'Postman-Token: 628d49ed-0af6-4e4d-b6ca-c16abd791af4' \
   -H 'cache-control: no-cache'
   ```
+
+=================================================
+
+**4. Versioning**
+Tick of from the checkbox.
+Add versions' names, default version, new target urls
+
+We can for instance set another target url for v2 and then call the gw (http://www.tyk-gateway.com:8080/soap-to-json/) and get the ip and not the main page.
