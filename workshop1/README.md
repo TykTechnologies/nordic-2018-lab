@@ -1,4 +1,122 @@
 
-1. Soap to xml:
-   Choose "Body transform", and add to "response" `{{ .| jsonMarshal }}`
-2. Choose "Modify headers" and add to "response" "Content-Type: application/json"
+**Soap to xml**
+
+Demonstrate **Body transform** and **Modify headers**
+1. Call `http://httpbin.org/xml` to get an xml
+2. Create a new keyless api, add a new endpoint "xml"
+3. Test against your gw `http://www.tyk-gateway.com:8080/soap-to-json/xml` and you'll get an xml format.
+4. Choose "Body transform", and add to "response" `{{ .| jsonMarshal }}`
+5. Choose "Modify headers" and add to "response" "Content-Type: application/json"
+6. Test against your gw `http://www.tyk-gateway.com:8080/soap-to-json/xml` and now you'll get:
+```xml
+{
+    "slideshow": {
+        "-author": "Yours Truly",
+        "-date": "Date of publication",
+        "-title": "Sample Slide Show",
+        "slide": [
+            {
+                "-type": "all",
+                "title": "Wake up to WonderWidgets!"
+            },
+            {
+                "-type": "all",
+                "item": [
+                    "Why",
+                    "",
+                    "Who"
+                ],
+                "title": "Overview"
+            }
+        ]
+    }
+}
+```
+
+**Input Validqation**
+
+Demonstrate **Json Schema** 
+1. Check and call `http://httpbin.org/post` and then same under the gateway (using postman or curl)
+2. Create a new endpoint unver the same api and choose "Validation JSON"
+```curl
+curl -X POST \
+  http://www.tyk-gateway.com:8080/soap-to-json/post \
+  -d '{
+	"id":"123456789",
+	"user":"yaara",
+	"todo":"ppt for ws1",
+	"complete": true
+}'
+```
+3. Test with the save request. You'll see your payload in the "data" field in the response.
+4. Play with the request - remove the id or the todo, to get the validation tripped
+
+
+**Versioning**
+Tick of from the checkbox.
+Add versions' names, default version, new target urls
+
+We can for instance set another target url for v2 and then call the gw (http://www.tyk-gateway.com:8080/soap-to-json/) and get the ip and not the main page.
+
+**Virtual Endpoint**
+
+1. Create a new keyless api, add a new endpoint "/" and choose **Virtual endpoint** from the drop down
+2. Paste this code 
+Make sure the headers are with Capitals.
+```javascript
+function myVirtualHandlerGetHeaders (request, session, config) {
+    rawlog("Virtual Test running")
+    
+    //Usage examples:
+    log("Request Session: " + JSON.stringify(session))
+    log("API Config:" + JSON.stringify(config))
+ 
+    log("Request object: " + JSON.stringify(request))   
+    log("Request Body: " + JSON.stringify(request.Body))
+    log("Request Headers:"+ JSON.stringify(request.Headers))
+    log("param-1:"+ request.Params["param1"])
+    
+    log("Request header type:" + typeof JSON.stringify(request.Headers))
+    var city = JSON.stringify(request.Headers.City)
+    log("Request header city:" + city)
+
+    //Make api call to upstream target
+    newRequest = {
+        "Method": "GET",
+        "Body": "",
+        "Headers": {"City": city},
+        "Domain": "http://httpbin.org",
+        "Resource": "/headers",
+        "FormData": {}
+    };
+    rawlog("--- before get to upstream ---")
+    response = TykMakeHttpRequest(JSON.stringify(newRequest));
+    rawlog("--- After get to upstream ---")
+    log('response type: ' + typeof response);
+    log('response: ' + response);
+    usableResponse = JSON.parse(response);
+    var bodyObject = JSON.parse(usableResponse.Body);
+    
+    var responseObject = {
+        //Body: "THIS IS A  VIRTUAL RESPONSE",
+        Body: "yo yo",
+        Headers: {
+            "x-tyk-test": "virtual",
+            "x-tyk-header-from-virt-endpoint": "city",
+            "x-tyk-city" : bodyObject.headers.City
+        },
+        Code: usableResponse.Code
+    }
+    
+    rawlog("Virtual Test ended")
+    return TykJsResponse(responseObject, session.meta_data)   
+}
+```
+3. Call the api using postman/curl and send Location header
+```curl
+curl -X GET \
+  http://www.tyk-gateway.com:8080/lambda/ \
+  -H 'Location: Stockholm' \
+  -H 'Postman-Token: 628d49ed-0af6-4e4d-b6ca-c16abd791af4' \
+  -H 'cache-control: no-cache'
+  ```
