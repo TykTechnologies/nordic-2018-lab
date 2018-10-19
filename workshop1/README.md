@@ -37,8 +37,9 @@ Demonstrate **Body transform** and **Modify headers**
 **2. Input Validqation**
 
 Demonstrate **Json Schema** 
-1. Check and call `http://httpbin.org/post` and then same under the gateway (using postman or curl)
-2. Create a new endpoint unver the same api and choose "Validation JSON"
+1. Check and call `http://httpbin.org/post` 
+2. Create a new keyless api, add a new endpoint "post" + change method to "post"!!!
+2. Choose "Validation JSON" for this endpoint
 ```curl
 curl -X POST \
   http://www.tyk-gateway.com:8080/soap-to-json/post \
@@ -50,7 +51,7 @@ curl -X POST \
 }'
 ```
 3. Test with the save request. You'll see your payload in the "data" field in the response.
-4. Play with the request - remove the id or the todo, to get the validation tripped
+4. Play with the request - remove the id or the todo, to get the validation tripped. For instance `{"error": "id: id is required"}` )
 
 =================================================
 
@@ -108,12 +109,12 @@ function myVirtualHandlerGetHeaders (request, session, config) {
     return TykJsResponse(responseObject, session.meta_data)   
 }
 ```
+
 3. Call the api using postman/curl and send Location header
 ```curl
 curl -X GET \
   http://www.tyk-gateway.com:8080/lambda/ \
-  -H 'Location: Stockholm' \
-  -H 'Postman-Token: 628d49ed-0af6-4e4d-b6ca-c16abd791af4' \
+  -H 'City: Stockholm' \
   -H 'cache-control: no-cache'
   ```
 
@@ -124,3 +125,7 @@ Tick of from the checkbox.
 Add versions' names, default version, new target urls
 
 We can for instance set another target url for v2 and then call the gw (http://www.tyk-gateway.com:8080/soap-to-json/) and get the ip and not the main page.
+
+=================================================
+
+**5. Authentication and authorization**
