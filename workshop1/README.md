@@ -34,7 +34,7 @@ Demonstrate **Body transform** and **Modify headers**
 ```
 =================================================
 
-**2. Input Validqation**
+**2. Input Validation**
 
 Demonstrate **Json Schema** 
 1. Check and call `http://httpbin.org/post` 
@@ -129,3 +129,22 @@ We can for instance set another target url for v2 and then call the gw (http://w
 =================================================
 
 **5. Authentication and authorization**
+
+1. Change the auth method for the api from the 2nd example `Input Validation` to "JWT" method
+2. Choose HMAC. For simplicity.
+3. Put a password of your choise where it says "Public Key (leave blank to embed in key session):"
+4. Save
+5. Go to policy screen, Add policy
+6. In the access list choose the api with the JWT auth
+7. Save
+8. Copy the policy id
+9. Open jwt.io and choose HS256
+10. In the payload section add a claim named "pol" and set it's value to the policy id
+11. Add the shared secret in the signature block
+12. Set the "sub" claim to your email for instance
+13. Copy the jwt and paste it as a bearer in the authorization header of request and test
+14. **context variable** Demo accessing the claims in the request - 
+Add the plugin "Modify header", and in the response add the following:
+ `x-tyk-pol: $tyk_context.jwt_claims_pol`
+ `x-tyk-header-host: $tyk_context.headers_Host `
+
