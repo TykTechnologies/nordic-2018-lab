@@ -33,6 +33,12 @@ Update the gateway configuration to point to your gRPC server and restart the se
 }
 ```
 
+Pull in the source code:
+
+```
+go get -u github.com/TykTechnologies/nordic-2018-lab/./...
+```
+
 From the dashboard, go to your todos api, and click `Raw API Definition`
 
 Change `custom_middleware.driver` from the empty string `""` to `"grpc"`.
